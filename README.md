@@ -45,7 +45,7 @@ MeshCollider components must be valid targets under all filtering options set in
   - `Set CharacterCollider`: Determines the 'CharacterCollider' bool value given to any new replacement colliders.
   - `Set IgnoreRaycasts`: Determines the 'IgnoreRaycasts' bool value given to any new replacement colliders.
 
-All of the above setting are respected by either batch or single component replacement actions.
+All of the above settings are respected by either batch or single component replacement actions.
 
 ### Batch actions:
 - `List matching MeshColliders`: Builds a list of all MeshCollider components which are valid targets under the current filtering options. See below for more details.
