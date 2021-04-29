@@ -68,3 +68,12 @@ I'm happy to receive any feedback (bug reports, feature requests, suggestions on
 
 
 Please do let me know if this has been helpful to you, it's always nice to hear and may help to motivate me to produce more tools in the future! This tool is provided free of charge, but if you wish to provide a small donation by way of thanks I'd very much appreciate NCR tips.
+
+## Credits and crediting
+You do not have to credit me (Zyzyl) if you use this tool to produce a world in Neos or if you use some or all of the code in your own plugin projects.
+Nonetheless, it would be very nice to receive credit if you found the plugin or C# source code useful - it might also help other people find the tool.
+
+Many thanks to the following people who helped in the development or testing of this plugin:
+- Elektrospy
+- Marsmaantje
+- guillefix
