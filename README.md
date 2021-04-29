@@ -7,6 +7,10 @@ This plugin adds a wizard for finding, replacing, or removing MeshCollider compo
 People to know the differences between collider component types, why one might want to avoid MeshColliders, and who wish to accelerate the collider-optimisation workflow. If you're unsure why this tool would be useful, ProbablePrime has some excellent information on colliders in their 3 part YouTube series on the topic. Part 3 (https://www.youtube.com/watch?v=xLVpzumI-H4) explains the differences between collider types.
 
 
+## Why is this a plugin and not a tool in a public folder?
+Currently we don't have access to the required functionality via LogiX or components in the main Neos build. In the long run I may consider rebuilding this tool inside Neos for easier distribution if future updates make that possible.
+
+
 ## How can I install / activate this plugin?
 1. Download the `MeshColliderManagementTools.dll` file from this repository and place it in the 'Libraries' subfolder wherever NeosVR is installed on your PC.
 2. Start Neos via the `NeosLauncher.exe` and make sure that the `MeshColliderManagementTools.dll` option is checked.
