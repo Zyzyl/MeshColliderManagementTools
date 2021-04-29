@@ -18,7 +18,7 @@ Currently we don't have access to the required functionality via LogiX or compon
 
 
 ## How can I use the wizard?
-First, drag a slot reference into the field below the 'Process root slot:' label. Any batch operations will use this slot and all child slots (to aribrary depth) as the target hierarchy.
+First, drag a slot reference into the field below the 'Process root slot:' label. Any batch operations will use this slot and all child slots (to arbitrary depth) as the target hierarchy.
 
 ### Filtering options:
 - `Ignore inactive`: When checked, any batch operations will ignore MeshCollider components on slots which are inactive in the world hierarchy. This may be due to said slots being set inactive themselves, or one or more of their parent slots being set inactive.
