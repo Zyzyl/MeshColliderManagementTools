@@ -1,20 +1,20 @@
 # MeshColliderManagementTools
 
-This plugin adds a wizard for finding, replacing, or removing MeshCollider components in Neos world hierarchies. This also supports batch replacement / removal.
+This plugin adds a utility wizard for easily finding, replacing, or removing MeshCollider components in Neos world hierarchies - supports batch find / replace / remove!
 
 
 ## Who is this for?
-People to know the differences between collider component types, why one might want to avoid MeshColliders, and who wish to accelerate the collider-optimisation workflow. If you're unsure why this tool would be useful, ProbablePrime has some excellent information on colliders in their 3 part YouTube series on the topic. Part 3 (https://www.youtube.com/watch?v=xLVpzumI-H4) explains the differences between collider types.
+People to know the differences between collider component types, when and why to avoid MeshColliders, and who wish to accelerate their collider-optimisation workflow. If you're unsure why this tool would be useful, ProbablePrime has some excellent information on colliders in their 3 part YouTube series on the topic. Part 3 (https://www.youtube.com/watch?v=xLVpzumI-H4) explains the differences between collider types.
 
 
 ## Why is this a plugin and not a tool in a public folder?
-Currently we don't have access to the required functionality via LogiX or components in the main Neos build. In the long run I may consider rebuilding this tool inside Neos for easier distribution if future updates make that possible.
+We can't access the necessary functionality via LogiX or components in the main Neos build. In the long run I may consider rebuilding this tool inside Neos for easier distribution if future updates make that possible.
 
 
 ## How can I install / activate this plugin?
-1. Download the `MeshColliderManagementTools.dll` file from this repository and place it in the 'Libraries' subfolder wherever NeosVR is installed on your PC.
-2. Start Neos via the `NeosLauncher.exe` and make sure that the `MeshColliderManagementTools.dll` option is checked.
-3. In a world where you have 'Builder' permissions, create an empty slot and attach the `MeshColliderManagementWiard` component from the 'Wizards' category. This will create a new wizard UI panel for you to use. The right side of the panel has a lot of empty space initially - this is intentional.
+1. Download the **MeshColliderManagementTools.dll** file from this repository and place it in the 'Libraries' subfolder wherever NeosVR is installed on your PC.
+2. Start Neos via the **NeosLauncher.exe** and make sure that the **MeshColliderManagementTools.dll** option is checked.
+3. In a world where you have 'Builder' permissions, create an empty slot and attach the `MeshColliderManagementWiard` component from the 'Wizards' category. This will create a new wizard UI panel for you to use. The right side of the panel has a lot of empty space initially - this is intentional and is used to show listed MeshColliders.
 
 
 ## How can I use the wizard?
@@ -34,13 +34,13 @@ First, drag a slot reference into the field below the 'Process root slot:' label
 MeshCollider components must be valid targets under all filtering options set in order for them to be affected by batch operations.
 
 ### Highlighing options:
-- `Highlight duration`: A float value controlling how many seconds highlight visuals persist when a 'Higlight' button in the found collider list is pressed.
+- `Highlight duration`: A float value controlling how many seconds highlight visuals persist when a 'Highlight' button in the found collider list is pressed.
 - `Highlight color`: Determines the color of the highlight visual.
 
 ### Collider replacement options:
 - `Replacement collider component`: An enum with 3 possible values `BoxCollider`, `SphereCollider`, `ConvexHullCollider`. This controls which collider component type MeshColliders will be replaced with.
 - `Replacement setup action`: An enum with 3 possible values `None`, `SetupFromLocalBounds`, `SetupFromGlobalBounds`. This controls whether new replacement BoxCollider or SphereCollider components will have their dimensions automatially setup using standard 'Setup from local bounds' or 'Setup from global bounds' functions available in the inspector panel for those components. Ignored when `Replacement collider component` is `ConvexHullCollider`.
-- `Preserve existing collider settings`: When checked, new replacement collider components will have the 'Type', 'CharacterCollider', and 'IgnoreRaycasts' fields set to the same values as were on the replaced MeshCollider component. If unchecked these can be specified using the following options (hidden if this is checked):
+- `Preserve existing collider settings`: When checked, new replacement collider components will have the 'Type', 'CharacterCollider', and 'IgnoreRaycasts' fields set to the same values as were on the replaced MeshCollider component. If `Preserve existing collider settings` is unchecked, these can each be specified using the following options (which are otherwise hidden):
   - `Set collision Type`: Determines the 'Type' enum value given to any new replacement colliders.
   - `Set CharacterCollider`: Determines the 'CharacterCollider' bool value given to any new replacement colliders.
   - `Set IgnoreRaycasts`: Determines the 'IgnoreRaycasts' bool value given to any new replacement colliders.
@@ -48,7 +48,7 @@ MeshCollider components must be valid targets under all filtering options set in
 All of the above settings are respected by either batch or single component replacement actions.
 
 ### Batch actions:
-- `List matching MeshColliders`: Builds a list of all MeshCollider components which are valid targets under the current filtering options. See below for more details.
+- `List matching MeshColliders`: Builds a list of all MeshCollider components which are valid targets under the current filtering options. See below for more details on possible actions for listed MeshColliders.
 - `Replace all matching MeshColliders`: Replaces all MeshCollider components which are valid targets under the current filtering options. This is undoable via the Undo / Redo radial menu buttons.
 - `Remove all matching MeshColliders`: Deletes all MeshCollider components which are valid targets under the current filtering options. This is undoable via the Undo / Redo radial menu buttons.
 
@@ -71,9 +71,12 @@ Please do let me know if this has been helpful to you, it's always nice to hear 
 
 ## Credits and crediting
 You do not have to credit me (Zyzyl) if you use this tool to produce a world in Neos or if you use some or all of the code in your own plugin projects.
-Nonetheless, it would be very nice to receive credit if you found the plugin or C# source code useful - it might also help other people find the tool.
+Nonetheless, it would be very nice to receive credit if you found the plugin or C# source code useful - it might also help other people find the tool!
 
 Many thanks to the following people who helped in the development or testing of this plugin:
-- Elektrospy
-- Marsmaantje
-- guillefix
+- Elektrospy (testing/suggestions/code help)
+- guillefix (code help)
+- marsmaantje (suggestions)
+- Beaned (suggestions)
+- 3x1t_5tyl3 (suggestions)
+- Medra (testing)
