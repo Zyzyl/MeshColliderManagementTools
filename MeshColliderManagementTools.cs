@@ -28,7 +28,7 @@ namespace MeshColliderManagementTools
     }
 
     // Wizard which allows batch or individual deletion or replacement of MeshColliders.
-    [Category("Wizards")]
+    [Category("Add-ons/Wizards")]
     public class MeshColliderManagementWizard : Component
     {
         public readonly Sync<bool> IgnoreInactive;
@@ -204,7 +204,6 @@ namespace MeshColliderManagementTools
         {
             if (ProcessRoot.Target != null)
             {
-                UniLog.Log(tag.Target.TargetString);
                 foreach (MeshCollider componentsInChild in ProcessRoot.Target.GetComponentsInChildren<MeshCollider>(delegate (MeshCollider mc)
                 {
                     // Check whether collider should be filtered out.
@@ -281,6 +280,7 @@ namespace MeshColliderManagementTools
                     break;
             }
             mc.UndoableDestroy();
+            World.EndUndoBatch();
             PopulateList();
             ShowResults($"MeshCollider replaced.");
         }
