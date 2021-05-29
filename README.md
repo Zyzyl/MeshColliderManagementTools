@@ -14,7 +14,7 @@ We can't access the necessary functionality via LogiX or components in the main 
 ## How can I install / activate this plugin?
 1. Download the **MeshColliderManagementTools.dll** file from this repository and place it in the 'Libraries' subfolder wherever NeosVR is installed on your PC.
 2. Start Neos via the **NeosLauncher.exe** and make sure that the **MeshColliderManagementTools.dll** option is checked.
-3. In a world where you have 'Builder' permissions, create an empty slot and attach the `MeshColliderManagementWiard` component from the 'Wizards' category. This will create a new wizard UI panel for you to use. The right side of the panel has a lot of empty space initially - this is intentional and is used to show listed MeshColliders.
+3. In a world where you have 'Builder' permissions, create an empty slot and attach the `MeshColliderManagementWiard` component from the 'Add-ons/Wizards' category. This will create a new wizard UI panel for you to use. The right side of the panel has a lot of empty space initially - this is intentional and is used to show listed MeshColliders.
 
 
 ## How can I use the wizard?
