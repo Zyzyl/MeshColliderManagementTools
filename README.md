@@ -4,7 +4,7 @@ This plugin adds a utility wizard for easily finding, replacing, or removing Mes
 
 
 ## Who is this for?
-People to know the differences between collider component types, when and why to avoid MeshColliders, and who wish to accelerate their collider-optimisation workflow. If you're unsure why this tool would be useful, ProbablePrime has some excellent information on colliders in their 3 part YouTube series on the topic. Part 3 (https://www.youtube.com/watch?v=xLVpzumI-H4) explains the differences between collider types.
+People who know the differences between collider component types, when and why to avoid MeshColliders, and who wish to accelerate their collider-optimisation workflow. If you're unsure why this tool would be useful, ProbablePrime has some excellent information on colliders in their 3 part YouTube series on the topic. Part 3 (https://www.youtube.com/watch?v=xLVpzumI-H4) explains the differences between collider types.
 
 
 ## Why is this a plugin and not a tool in a public folder?
