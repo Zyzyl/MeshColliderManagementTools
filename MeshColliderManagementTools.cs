@@ -12,13 +12,15 @@ namespace MeshColliderManagementTools
     {
         BoxCollider,
         SphereCollider,
+        CapsuleCollider,
+        CylinderCollider,
         ConvexHullCollider
     }
     public enum SetupBoundsType
     {
         None,
         SetupFromLocalBounds,
-        SetupFromGlobalBounds
+        SetupFromPreciseBounds,
     }
     public enum UseTagMode
     {
@@ -38,6 +40,7 @@ namespace MeshColliderManagementTools
         public readonly Sync<bool> PreserveColliderSettings;
         public readonly Sync<bool> SetIgnoreRaycasts;
         public readonly Sync<bool> SetCharacterCollider;
+        public readonly Sync<float> Mass;
         public readonly Sync<float> HighlightDuration;
         public readonly Sync<color> HighlightColor;
         public readonly Sync<ColliderType> setColliderType;
@@ -64,6 +67,7 @@ namespace MeshColliderManagementTools
             PreserveColliderSettings.Value = true;
             HighlightDuration.Value = 1f;
             HighlightColor.Value = new color(1f, 1f, 1f);
+            Mass.Value = 1f;
         }
 
         protected override void OnAttach()
@@ -76,7 +80,7 @@ namespace MeshColliderManagementTools
             neosCanvasPanel.Panel.AddCloseButton();
             neosCanvasPanel.Panel.AddParentButton();
             neosCanvasPanel.Panel.Title = "MeshCollider Management Wizard";
-            neosCanvasPanel.CanvasSize = new float2(800f, 850f);
+            neosCanvasPanel.CanvasSize = new float2(800f, 900f);
             UIBuilder uIBuilder = new UIBuilder(neosCanvasPanel.Canvas);
             List<RectTransform> rectList = uIBuilder.SplitHorizontally(0.5f, 0.5f);
             // Build left hand side UI - options and buttons.
@@ -112,7 +116,6 @@ namespace MeshColliderManagementTools
             _text = "Highlight color:";
             uIBuilder3.Text(in _text);
             uIBuilder3.ColorMemberEditor(HighlightColor);
-            uIBuilder3.NestOut();
             uIBuilder3.Spacer(24f);
             // Controls for specific replacement collider settings.
             _text = "Replacement collider component:";
@@ -129,6 +132,8 @@ namespace MeshColliderManagementTools
             Slot _hideTextSlot = _layoutRoot.GetAllChildren().Last();
             uIBuilder3.EnumMemberEditor(setColliderType);
             Slot _hideEnumSlot = _layoutRoot.GetAllChildren().Last().Parent.Parent;
+            _text = "Collider Mass:";
+            Slot _hideFloatSlot = uIBuilder3.HorizontalElementWithLabel(in _text, 0.9f, () => uIBuilder3.PrimitiveMemberEditor(Mass)).Slot.Parent;
             _text = "Set CharacterCollider:";
             Slot _hideBoolSlot1 = uIBuilder3.HorizontalElementWithLabel(in _text, 0.9f, () => uIBuilder3.BooleanMemberEditor(SetCharacterCollider)).Slot.Parent;
             _text = "Set IgnoreRaycasts:";
@@ -143,7 +148,7 @@ namespace MeshColliderManagementTools
             _boolValDriver.TrueValue.Value = false;
             _boolValDriver.FalseValue.Value = true;
             _boolValDriver.TargetField.Target = _valMultiDriver.Value;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 5; i++)
             {
                 _valMultiDriver.Drives.Add();
             }
@@ -151,6 +156,7 @@ namespace MeshColliderManagementTools
             _valMultiDriver.Drives[1].Target = _hideEnumSlot.ActiveSelf_Field;
             _valMultiDriver.Drives[2].Target = _hideBoolSlot1.ActiveSelf_Field;
             _valMultiDriver.Drives[3].Target = _hideBoolSlot2.ActiveSelf_Field;
+            _valMultiDriver.Drives[4].Target = _hideFloatSlot.ActiveSelf_Field;
             // Buttons for batch actions.
             _text = "List matching MeshColliders";
             uIBuilder3.Button(in _text, PopulateList);
@@ -222,6 +228,16 @@ namespace MeshColliderManagementTools
             else ShowResults("No target root slot set.");
         }
 
+        private bool CheckReplacementBoundsSetting()
+        {
+            return ((replacementColliderComponent == ReplacementColliderComponent.BoxCollider)
+                || (replacementColliderComponent == ReplacementColliderComponent.SphereCollider)
+                || (replacementColliderComponent == ReplacementColliderComponent.ConvexHullCollider)
+                || (((replacementColliderComponent == ReplacementColliderComponent.CapsuleCollider)
+                || (replacementColliderComponent == ReplacementColliderComponent.CylinderCollider))
+                && (setupBoundsType.Value != SetupBoundsType.SetupFromLocalBounds)));
+        }
+
         private void Highlight(IButton button, ButtonEventData eventData, Slot s)
         {
             HighlightHelper.FlashHighlight(s, null, HighlightColor, HighlightDuration);
@@ -262,48 +278,9 @@ namespace MeshColliderManagementTools
 
         private void Replace(IButton button, ButtonEventData eventData, MeshCollider mc)
         {
-            World.BeginUndoBatch("Replace MeshCollider");
-            switch (replacementColliderComponent.Value)
+            if (CheckReplacementBoundsSetting())
             {
-                case ReplacementColliderComponent.BoxCollider:
-                    var bc = mc.Slot.AttachComponent<BoxCollider>();
-                    bc.CreateSpawnUndoPoint();
-                    SetupNewCollider(bc, mc);
-                    break;
-                case ReplacementColliderComponent.SphereCollider:
-                    var sc = mc.Slot.AttachComponent<SphereCollider>();
-                    sc.CreateSpawnUndoPoint();
-                    SetupNewCollider(sc, mc);
-                    break;
-                case ReplacementColliderComponent.ConvexHullCollider:
-                    mc.Slot.AttachComponent<ConvexHullCollider>().CreateSpawnUndoPoint();
-                    break;
-            }
-            mc.UndoableDestroy();
-            World.EndUndoBatch();
-            PopulateList();
-            ShowResults($"MeshCollider replaced.");
-        }
-
-        private void RemoveAll(IButton button, ButtonEventData eventData)
-        {
-            World.BeginUndoBatch("Batch remove MeshColliders");
-            _count = 0;
-            ForeachMeshCollider(delegate (MeshCollider mc)
-            {
-                mc.UndoableDestroy();
-                _count++;
-            });
-            World.EndUndoBatch();
-            PopulateList();
-            ShowResults($"{_count} matching MeshColliders removed.");
-        }
-        private void ReplaceAll(IButton button, ButtonEventData eventData)
-        {
-            World.BeginUndoBatch("Batch replace MeshColliders");
-            _count = 0;
-            ForeachMeshCollider(delegate (MeshCollider mc)
-            {
+                World.BeginUndoBatch("Replace MeshCollider");
                 switch (replacementColliderComponent.Value)
                 {
                     case ReplacementColliderComponent.BoxCollider:
@@ -321,11 +298,77 @@ namespace MeshColliderManagementTools
                         break;
                 }
                 mc.UndoableDestroy();
+                World.EndUndoBatch();
+                PopulateList();
+                ShowResults($"MeshCollider replaced.");
+            }
+            else
+            {
+                ShowResults($"{replacementColliderComponent.Value} cannot be used with {setupBoundsType.Value}");
+            }
+        }
+
+        private void RemoveAll(IButton button, ButtonEventData eventData)
+        {
+            World.BeginUndoBatch("Batch remove MeshColliders");
+            _count = 0;
+            ForeachMeshCollider(delegate (MeshCollider mc)
+            {
+                mc.UndoableDestroy();
                 _count++;
             });
             World.EndUndoBatch();
             PopulateList();
-            ShowResults($"{_count} matching MeshColliders replaced with {replacementColliderComponent.ToString()}s.");
+            ShowResults($"{_count} matching MeshColliders removed.");
+        }
+        private void ReplaceAll(IButton button, ButtonEventData eventData)
+        {
+            if (CheckReplacementBoundsSetting())
+            {
+                World.BeginUndoBatch("Batch replace MeshColliders");
+                _count = 0;
+                ForeachMeshCollider(delegate (MeshCollider mc)
+                {
+                    switch (replacementColliderComponent.Value)
+                    {
+                        case ReplacementColliderComponent.BoxCollider:
+                            var bc = mc.Slot.AttachComponent<BoxCollider>();
+                            bc.CreateSpawnUndoPoint();
+                            SetupNewCollider(bc, mc);
+                            break;
+                        case ReplacementColliderComponent.SphereCollider:
+                            var sc = mc.Slot.AttachComponent<SphereCollider>();
+                            sc.CreateSpawnUndoPoint();
+                            SetupNewCollider(sc, mc);
+                            break;
+                        case ReplacementColliderComponent.ConvexHullCollider:
+                            var chc = mc.Slot.AttachComponent<ConvexHullCollider>();
+                            chc.CreateSpawnUndoPoint();
+                            SetupNewCollider(chc, mc);
+                            break;
+                        case ReplacementColliderComponent.CapsuleCollider:
+                            var capc = mc.Slot.AttachComponent<CapsuleCollider>();
+                            capc.CreateSpawnUndoPoint();
+                            SetupNewCollider(capc, mc);
+                            break;
+                        case ReplacementColliderComponent.CylinderCollider:
+                            var cylc = mc.Slot.AttachComponent<CylinderCollider>();
+                            cylc.CreateSpawnUndoPoint();
+                            SetupNewCollider(cylc, mc);
+                            break;
+                    }
+                    mc.UndoableDestroy();
+                    _count++;
+                });
+                World.EndUndoBatch();
+                PopulateList();
+                ShowResults($"{_count} matching MeshColliders replaced with {replacementColliderComponent.ToString()}s.");
+            }
+            else
+            {
+                ShowResults($"{replacementColliderComponent.Value} cannot be used with {setupBoundsType.Value}");
+            }
+
         }
 
         private void SetupNewCollider(BoxCollider bc, MeshCollider mc)
@@ -337,8 +380,8 @@ namespace MeshColliderManagementTools
                 case SetupBoundsType.SetupFromLocalBounds:
                     bc.SetFromLocalBounds();
                     break;
-                case SetupBoundsType.SetupFromGlobalBounds:
-                    bc.SetFromGlobalBounds();
+                case SetupBoundsType.SetupFromPreciseBounds:
+                    bc.SetFromLocalBoundsPrecise();
                     break;
             }
             if (PreserveColliderSettings)
@@ -346,12 +389,14 @@ namespace MeshColliderManagementTools
                 bc.Type.Value = mc.Type.Value;
                 bc.CharacterCollider.Value = mc.CharacterCollider.Value;
                 bc.IgnoreRaycasts.Value = mc.IgnoreRaycasts.Value;
+                bc.Mass.Value = mc.Mass.Value;
             }
             else
             {
                 bc.Type.Value = setColliderType;
                 bc.CharacterCollider.Value = SetCharacterCollider;
                 bc.IgnoreRaycasts.Value = SetIgnoreRaycasts;
+                bc.Mass.Value = Mass;
             }
         }
 
@@ -364,8 +409,8 @@ namespace MeshColliderManagementTools
                 case SetupBoundsType.SetupFromLocalBounds:
                     sc.SetFromLocalBounds();
                     break;
-                case SetupBoundsType.SetupFromGlobalBounds:
-                    sc.SetFromGlobalBounds();
+                case SetupBoundsType.SetupFromPreciseBounds:
+                    sc.SetFromPreciseBounds();
                     break;
             }
             if (PreserveColliderSettings)
@@ -373,12 +418,84 @@ namespace MeshColliderManagementTools
                 sc.Type.Value = mc.Type.Value;
                 sc.CharacterCollider.Value = mc.CharacterCollider.Value;
                 sc.IgnoreRaycasts.Value = mc.IgnoreRaycasts.Value;
+                sc.Mass.Value = mc.Mass.Value;
             }
             else
             {
                 sc.Type.Value = setColliderType;
                 sc.CharacterCollider.Value = SetCharacterCollider;
                 sc.IgnoreRaycasts.Value = SetIgnoreRaycasts;
+                sc.Mass.Value = Mass;
+            }
+        }
+
+        private void SetupNewCollider(CapsuleCollider capc, MeshCollider mc)
+        {
+            switch (setupBoundsType.Value)
+            {
+                case SetupBoundsType.None:
+                    break;
+                case SetupBoundsType.SetupFromPreciseBounds:
+                    capc.SetFromExactCylinder();
+                    break;
+            }
+            if (PreserveColliderSettings)
+            {
+                capc.Type.Value = mc.Type.Value;
+                capc.CharacterCollider.Value = mc.CharacterCollider.Value;
+                capc.IgnoreRaycasts.Value = mc.IgnoreRaycasts.Value;
+                capc.Mass.Value = mc.Mass.Value;
+            }
+            else
+            {
+                capc.Type.Value = setColliderType;
+                capc.CharacterCollider.Value = SetCharacterCollider;
+                capc.IgnoreRaycasts.Value = SetIgnoreRaycasts;
+                capc.Mass.Value = Mass;
+            }
+        }
+
+        private void SetupNewCollider(CylinderCollider cylc, MeshCollider mc)
+        {
+            switch (setupBoundsType.Value)
+            {
+                case SetupBoundsType.None:
+                    break;
+                case SetupBoundsType.SetupFromPreciseBounds:
+                    cylc.SetFromPreciseBounds();
+                    break;
+            }
+            if (PreserveColliderSettings)
+            {
+                cylc.Type.Value = mc.Type.Value;
+                cylc.CharacterCollider.Value = mc.CharacterCollider.Value;
+                cylc.IgnoreRaycasts.Value = mc.IgnoreRaycasts.Value;
+                cylc.Mass.Value = mc.Mass.Value;
+            }
+            else
+            {
+                cylc.Type.Value = setColliderType;
+                cylc.CharacterCollider.Value = SetCharacterCollider;
+                cylc.IgnoreRaycasts.Value = SetIgnoreRaycasts;
+                cylc.Mass.Value = Mass;
+            }
+        }
+
+        private void SetupNewCollider(ConvexHullCollider chc, MeshCollider mc)
+        {
+            if (PreserveColliderSettings)
+            {
+                chc.Type.Value = mc.Type.Value;
+                chc.CharacterCollider.Value = mc.CharacterCollider.Value;
+                chc.IgnoreRaycasts.Value = mc.IgnoreRaycasts.Value;
+                chc.Mass.Value = mc.Mass.Value;
+            }
+            else
+            {
+                chc.Type.Value = setColliderType;
+                chc.CharacterCollider.Value = SetCharacterCollider;
+                chc.IgnoreRaycasts.Value = SetIgnoreRaycasts;
+                chc.Mass.Value = Mass;
             }
         }
 
