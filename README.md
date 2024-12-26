@@ -1,6 +1,6 @@
 # MeshColliderManagementTools
 
-This plugin adds a utility wizard for easily finding, replacing, or removing MeshCollider components in Neos world hierarchies - supports batch find / replace / remove!
+This plugin adds a utility wizard for easily finding, replacing, or removing MeshCollider components in Resonite world hierarchies - supports batch find / replace / remove!
 
 
 ## Who is this for?
@@ -8,11 +8,11 @@ People who know the differences between collider component types, when and why t
 
 
 ## Why is this a plugin and not a tool in a public folder?
-We can't access the necessary functionality via LogiX or components in the main Neos build. In the long run I may consider rebuilding this tool inside Neos for easier distribution if future updates make that possible.
+We can't access the necessary functionality via LogiX or components in the main Resonite build. In the long run I may consider rebuilding this tool inside Resonite for easier distribution if future updates make that possible.
 
 
 ## How can I install / activate this plugin?
-1. Download the **MeshColliderManagementTools.dll** file from this repository and place it in the 'Libraries' subfolder wherever NeosVR is installed on your PC.
+1. Download the **MeshColliderManagementTools.dll** file from this repository and place it in the 'Libraries' subfolder wherever Resonite is installed on your PC.
 2. Start Neos via the **NeosLauncher.exe** and make sure that the **MeshColliderManagementTools.dll** option is checked.
 3. In a world where you have 'Builder' permissions, create an empty slot and attach the `MeshColliderManagementWiard` component from the 'Add-ons/Wizards' category. This will create a new wizard UI panel for you to use. The right side of the panel has a lot of empty space initially - this is intentional and is used to show listed MeshColliders.
 
@@ -70,7 +70,7 @@ I'm happy to receive any feedback (bug reports, feature requests, suggestions on
 Please do let me know if this has been helpful to you, it's always nice to hear and may help to motivate me to produce more tools in the future! This tool is provided free of charge, but if you wish to provide a small donation by way of thanks I'd very much appreciate NCR tips.
 
 ## Credits and crediting
-You **do not** have to credit me (Zyzyl) if you use this tool to produce a world in Neos or if you use some or all of the code in your own plugin projects.
+You **do not** have to credit me (Zyzyl) if you use this tool to produce a world in Resonite or if you use some or all of the code in your own plugin projects.
 Nonetheless, it would be very nice to receive credit if you found the plugin or C# source code useful - it might also help other people find the tool!
 
 Many thanks to the following people who helped in the development or testing of this plugin:
